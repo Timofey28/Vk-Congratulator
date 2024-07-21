@@ -1,0 +1,13 @@
+# Sensitive files
+data.py
+static_text.txt
+
+# Testing files
+*test*
+
+# IDE files
+.idea/*
+__pycache__/*
+
+# Log files
+*.log
