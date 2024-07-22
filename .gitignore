@@ -6,8 +6,15 @@ static_text.txt
 *test*
 
 # IDE files
-.idea/*
-__pycache__/*
+.idea/
+__pycache__/
 
 # Log files
 *.log
+*.json
+
+# Venv
+venv/
+
+# Reports
+*.docx

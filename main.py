@@ -1,10 +1,12 @@
-import vk_api
-from data import USER_TOKEN, GROUP_ID
-import schedule
 from time import sleep
-import logging
 from datetime import date
 import requests
+import logging
+import vk_api
+import schedule
+from data import USER_TOKEN, GROUP_ID
+from database import Database
+
 
 CONGRATULATIONS_AMOUNT = 32
 PHOTOS_AMOUNT = 41
@@ -14,6 +16,9 @@ vk = session.get_api()
 
 
 def post_congratulation():
+    # Добавляем в базу данных новых подписчиков
+    database.add_new_people()
+
     newborns = get_newborns()
     if not newborns:
         logging.info("Люди, рожденные в этот день, не найдены")
@@ -125,4 +130,8 @@ if __name__ == '__main__':
         filemode='w',
         level=logging.INFO
     )
+
+    database = Database()
+    database.generate()
+
     start_schedule()
