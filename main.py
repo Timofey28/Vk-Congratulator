@@ -2,6 +2,7 @@ from time import sleep
 from datetime import date
 import requests
 import logging
+from typing import Optional
 import vk_api
 import schedule
 from data import USER_TOKEN, GROUP_ID
@@ -19,10 +20,15 @@ def post_congratulation():
     # Добавляем в базу данных новых подписчиков
     database.add_new_people()
 
+    message, attachment = make_post_message()
+    publish_post(message, attachment)
+
+
+def make_post_message() -> tuple[Optional[str], Optional[str]]:
     newborns = get_newborns()
     if not newborns:
         logging.info("Люди, рожденные в этот день, не найдены")
-        return
+        return None, None
 
     congratulation_path, photo_path, congrat_no, photo_no = get_congratulation_and_photo_paths()
     congratulation, attachment = None, None
@@ -33,7 +39,7 @@ def post_congratulation():
         except:
             if _ == 9:
                 logging.error('Не удалось загрузить изображение на сервер вк за 10 попыток')
-                return
+                return None, None
             sleep(30)
 
     # Ссылки на страницы именинников через запятую
@@ -43,6 +49,10 @@ def post_congratulation():
     message = f'🎉🎉🎉 Поздравляем с Днём рождения наших сегодняшних именинников:\n\n{newborn_links}\n\n{congratulation}'
     message += f'\nВаш ГАЛОМЕД 💎\n\n{get_static_text()}'
 
+    return message, attachment
+
+
+def publish_post(message: str, attachment: str) -> Optional[str]:
     result = None
     for _ in range(10):
         try:
@@ -51,9 +61,10 @@ def post_congratulation():
         except Exception as e:
             if _ == 9:
                 logging.error(f'Не удалось опубликовать пост за 10 попыток: {e}')
-                return
+                return None
             sleep(30)
     logging.info(f'Пост успешно опубликован! - https://vk.com/wall-{GROUP_ID}_{result["post_id"]}\n')
+    return f'https://vk.com/wall-{GROUP_ID}_{result["post_id"]}'
 
 
 def get_newborns():

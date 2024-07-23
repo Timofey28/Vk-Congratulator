@@ -18,3 +18,8 @@ venv/
 
 # Reports
 *.docx
+*.png
+*.drawio
+
+# Do not ignore!
+!tests/
